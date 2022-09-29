@@ -23,7 +23,6 @@ func (l *LexemeBuffer) ReadLexeme(expression string, startPos int) (*Lexeme, err
 	if lexemeType != Unknown {
 		return NewLexeme(lexemeType, symbol)
 	}
-	//TODO: return after add getVariable
 	return nil, errors.New("lexical error: unknown lexeme")
 }
 
