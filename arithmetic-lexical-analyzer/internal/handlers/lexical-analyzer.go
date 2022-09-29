@@ -35,20 +35,12 @@ func (l *LexicalAnalyzer) analysis(expression string) ([]lexical.Lexeme, error) 
 	for i < len(expression) {
 		lexeme, err := lexemeBuffer.ReadLexeme(expression, i)
 		if err != nil {
-			return nil, errors.New(err.Error() + " in " + strconv.Itoa(i+1) + " position")
+			return nil, errors.New(err.Error() + " in " + strconv.Itoa(lexemePos) + " position")
 		}
-		fmt.Println(lexeme.Symbol)
 		i += len(lexeme.Symbol)
 		lexemes = append(lexemes, *lexeme)
 		lexemePos++
 	}
-	//for i, symbol := range expression {
-	//	lexeme, err := lexical.NewLexeme(symbol)
-	//	if err != nil {
-	//		return nil, errors.New(err.Error() + " in " + strconv.Itoa(i+1) + " position")
-	//	}
-	//	lexemes = append(lexemes, *lexeme)
-	//}
 
 	return lexemes, nil
 }

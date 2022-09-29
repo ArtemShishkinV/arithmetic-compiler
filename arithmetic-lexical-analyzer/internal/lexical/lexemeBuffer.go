@@ -2,6 +2,7 @@ package lexical
 
 import (
 	"bytes"
+	"errors"
 )
 
 type LexemeBuffer struct{}
@@ -10,7 +11,11 @@ func (l *LexemeBuffer) ReadLexeme(expression string, startPos int) (*Lexeme, err
 	if lexemeType := getOperand(string(expression[startPos])); lexemeType != Unknown {
 		return NewLexeme(lexemeType, string(expression[startPos]))
 	}
-	lexemeType, symbol := getFloatNumber(expression, startPos)
+	lexemeType, symbol := getVariable(expression, startPos)
+	if lexemeType != Unknown {
+		return NewLexeme(lexemeType, symbol)
+	}
+	lexemeType, symbol = getFloatNumber(expression, startPos)
 	if lexemeType != Unknown {
 		return NewLexeme(lexemeType, symbol)
 	}
@@ -18,9 +23,8 @@ func (l *LexemeBuffer) ReadLexeme(expression string, startPos int) (*Lexeme, err
 	if lexemeType != Unknown {
 		return NewLexeme(lexemeType, symbol)
 	}
-	return nil, nil
 	//TODO: return after add getVariable
-	//return nil, errors.New("lexical error: unknown lexeme")
+	return nil, errors.New("lexical error: unknown lexeme")
 }
 
 func getOperand(symbol string) LexemeType {
@@ -69,13 +73,12 @@ func getFloatNumber(expression string, startPos int) (LexemeType, string) {
 
 func getIntNumber(expression string, startPos int) (LexemeType, string) {
 	var buffer bytes.Buffer
-	changePos, currentPos := 0, 0
+	currentPos := startPos
 	char := expression[startPos]
 
 	for char >= '0' && char <= '9' {
 		buffer.WriteString(string(char))
-		changePos++
-		currentPos = startPos + changePos
+		currentPos++
 		if len(expression) == currentPos {
 			char = '\n'
 			break
@@ -88,4 +91,32 @@ func getIntNumber(expression string, startPos int) (LexemeType, string) {
 	}
 
 	return Unknown, ""
+}
+
+func getVariable(expression string, startPos int) (LexemeType, string) {
+	if checkFirstSymbolInVariableName(expression[startPos]) {
+		buffer := bytes.NewBufferString(string(expression[startPos]))
+		currentPos := startPos + 1
+		char := expression[currentPos]
+
+		for char >= '0' && char <= '9' || checkFirstSymbolInVariableName(char) {
+			buffer.WriteString(string(char))
+			currentPos++
+			if len(expression) == currentPos {
+				char = '\n'
+				break
+			}
+			char = expression[currentPos]
+		}
+
+		if char != expression[startPos] {
+			return Variable, buffer.String()
+		}
+	}
+
+	return Unknown, ""
+}
+
+func checkFirstSymbolInVariableName(char byte) bool {
+	return char >= 'a' && char <= 'z' || char >= 'A' && char <= 'Z' || char == '_'
 }
