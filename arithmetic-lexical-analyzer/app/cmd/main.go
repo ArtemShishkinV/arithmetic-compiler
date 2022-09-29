@@ -1,8 +1,8 @@
 package main
 
 import (
+	"arithmetic-lexical-analyzer/internal/app"
 	"arithmetic-lexical-analyzer/internal/config"
-	"arithmetic-lexical-analyzer/internal/handlers"
 	"fmt"
 	"os"
 )
@@ -17,8 +17,8 @@ func main() {
 	fmt.Printf("#running\nConfig: %s, %s, %s\n",
 		defConfig.SrcFileName, defConfig.OutTokensFileName, defConfig.OutSymbolsFileName)
 
-	handler := handlers.NewHandler(defConfig)
-	if err = handler.Start(); err != nil {
+	application, _ := app.NewApp(defConfig)
+	if err = application.Run(); err != nil {
 		fmt.Println(err)
 		return
 	}

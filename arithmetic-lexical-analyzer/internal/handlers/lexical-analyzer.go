@@ -1,9 +1,7 @@
 package handlers
 
 import (
-	"arithmetic-lexical-analyzer/internal/config"
 	"arithmetic-lexical-analyzer/internal/lexical"
-	"arithmetic-lexical-analyzer/pkg"
 	"errors"
 	"fmt"
 	"regexp"
@@ -11,41 +9,24 @@ import (
 	"strings"
 )
 
-type lexicalAnalyzer struct {
-	config *config.Config
+type LexicalAnalyzer struct{}
+
+func NewLexicalAnalyzer() *LexicalAnalyzer {
+	return &LexicalAnalyzer{}
 }
 
-func (l *lexicalAnalyzer) Start() error {
+func (l *LexicalAnalyzer) Start(expression string) ([]string, []string, error) {
 	fmt.Println("#analysis")
-	expressions, err := pkg.ReadFileLines(l.config.SrcFileName)
-	if err != nil {
-		return err
-	}
-	if len(expressions) != 1 {
-		return errors.New("source file must contain only one string")
-	}
-	expression := expressions[0]
 	lexemes, err := l.analysis(expression)
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
-	if err = pkg.WriteFile(l.getOutputTokens(lexemes), l.config.OutTokensFileName); err != nil {
-		return err
-	}
-	if err = pkg.WriteFile(l.getOutputVariables(l.getVariablesFromLexemes(lexemes)),
-		l.config.OutSymbolsFileName); err != nil {
-		return err
-	}
-	return nil
+	tokens := l.getOutputTokens(lexemes)
+	tableVars := l.getOutputVariables(l.getVariablesFromLexemes(lexemes))
+	return tokens, tableVars, nil
 }
 
-func NewLexicalAnalyzer(argConfig *config.Config) Handler {
-	return &lexicalAnalyzer{
-		argConfig,
-	}
-}
-
-func (l *lexicalAnalyzer) analysis(expression string) ([]lexical.Lexeme, error) {
+func (l *LexicalAnalyzer) analysis(expression string) ([]lexical.Lexeme, error) {
 	symbols := l.getSymbolsFromExpression(expression)
 	var lexemes []lexical.Lexeme
 
@@ -60,7 +41,7 @@ func (l *lexicalAnalyzer) analysis(expression string) ([]lexical.Lexeme, error) 
 	return lexemes, nil
 }
 
-func (l *lexicalAnalyzer) getVariablesFromLexemes(lexemes []lexical.Lexeme) []lexical.Lexeme {
+func (l *LexicalAnalyzer) getVariablesFromLexemes(lexemes []lexical.Lexeme) []lexical.Lexeme {
 	var varLexemes []lexical.Lexeme
 	for _, lexeme := range lexemes {
 		if lexeme.Type == lexical.Variable {
@@ -70,7 +51,7 @@ func (l *lexicalAnalyzer) getVariablesFromLexemes(lexemes []lexical.Lexeme) []le
 	return varLexemes
 }
 
-func (l *lexicalAnalyzer) getSymbolsFromExpression(expression string) []string {
+func (l *LexicalAnalyzer) getSymbolsFromExpression(expression string) []string {
 	delimiter := " "
 	regSpaces, _ := regexp.Compile(`\s+`)
 	res := regSpaces.ReplaceAllString(expression, delimiter)
@@ -79,7 +60,7 @@ func (l *lexicalAnalyzer) getSymbolsFromExpression(expression string) []string {
 	return strings.Split(res, delimiter)
 }
 
-func (l *lexicalAnalyzer) getOutputTokens(lexemes []lexical.Lexeme) []string {
+func (l *LexicalAnalyzer) getOutputTokens(lexemes []lexical.Lexeme) []string {
 	var result []string
 	varNumber := 1
 	for _, lexeme := range lexemes {
@@ -92,7 +73,7 @@ func (l *lexicalAnalyzer) getOutputTokens(lexemes []lexical.Lexeme) []string {
 	}
 	return result
 }
-func (l *lexicalAnalyzer) getOutputVariables(lexemes []lexical.Lexeme) []string {
+func (l *LexicalAnalyzer) getOutputVariables(lexemes []lexical.Lexeme) []string {
 	var result []string
 	for i, lexeme := range lexemes {
 		result = append(result, fmt.Sprintf("%d - %s", i+1, lexeme.Symbol))
