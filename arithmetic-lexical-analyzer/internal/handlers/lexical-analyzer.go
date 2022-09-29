@@ -4,9 +4,7 @@ import (
 	"arithmetic-lexical-analyzer/internal/lexical"
 	"errors"
 	"fmt"
-	"regexp"
 	"strconv"
-	"strings"
 )
 
 type LexicalAnalyzer struct{}
@@ -27,7 +25,7 @@ func (l *LexicalAnalyzer) Start(expression string) ([]string, []string, error) {
 }
 
 func (l *LexicalAnalyzer) analysis(expression string) ([]lexical.Lexeme, error) {
-	symbols := l.getSymbolsFromExpression(expression)
+	symbols := make([]string, 3)
 	var lexemes []lexical.Lexeme
 
 	for i, symbol := range symbols {
@@ -49,15 +47,6 @@ func (l *LexicalAnalyzer) getVariablesFromLexemes(lexemes []lexical.Lexeme) []le
 		}
 	}
 	return varLexemes
-}
-
-func (l *LexicalAnalyzer) getSymbolsFromExpression(expression string) []string {
-	delimiter := " "
-	regSpaces, _ := regexp.Compile(`\s+`)
-	res := regSpaces.ReplaceAllString(expression, delimiter)
-	res = strings.ReplaceAll(res, "(", "("+delimiter)
-	res = strings.ReplaceAll(res, ")", delimiter+")")
-	return strings.Split(res, delimiter)
 }
 
 func (l *LexicalAnalyzer) getOutputTokens(lexemes []lexical.Lexeme) []string {
