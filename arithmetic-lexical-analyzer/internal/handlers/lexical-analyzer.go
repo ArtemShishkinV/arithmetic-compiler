@@ -2,11 +2,12 @@ package handlers
 
 import (
 	"arithmetic-lexical-analyzer/internal/config"
-	"arithmetic-lexical-analyzer/internal/models"
+	"arithmetic-lexical-analyzer/internal/lexical"
 	"arithmetic-lexical-analyzer/pkg"
 	"errors"
 	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -44,27 +45,25 @@ func NewLexicalAnalyzer(argConfig *config.Config) Handler {
 	}
 }
 
-func (l *lexicalAnalyzer) analysis(expression string) ([]models.Lexeme, error) {
+func (l *lexicalAnalyzer) analysis(expression string) ([]lexical.Lexeme, error) {
 	symbols := l.getSymbolsFromExpression(expression)
-	pos := 1
-	var lexemes []models.Lexeme
+	var lexemes []lexical.Lexeme
 
-	for _, symbol := range symbols {
-		lexeme, err := models.GetLexeme(symbol, pos)
+	for i, symbol := range symbols {
+		lexeme, err := lexical.NewLexeme(symbol)
 		if err != nil {
-			return nil, err
+			return nil, errors.New(err.Error() + " in " + strconv.Itoa(i+1) + " position")
 		}
-		pos++
 		lexemes = append(lexemes, *lexeme)
 	}
 
 	return lexemes, nil
 }
 
-func (l *lexicalAnalyzer) getVariablesFromLexemes(lexemes []models.Lexeme) []models.Lexeme {
-	var varLexemes []models.Lexeme
+func (l *lexicalAnalyzer) getVariablesFromLexemes(lexemes []lexical.Lexeme) []lexical.Lexeme {
+	var varLexemes []lexical.Lexeme
 	for _, lexeme := range lexemes {
-		if lexeme.Type == models.Variable {
+		if lexeme.Type == lexical.Variable {
 			varLexemes = append(varLexemes, lexeme)
 		}
 	}
@@ -80,11 +79,11 @@ func (l *lexicalAnalyzer) getSymbolsFromExpression(expression string) []string {
 	return strings.Split(res, delimiter)
 }
 
-func (l *lexicalAnalyzer) getOutputTokens(lexemes []models.Lexeme) []string {
+func (l *lexicalAnalyzer) getOutputTokens(lexemes []lexical.Lexeme) []string {
 	var result []string
 	varNumber := 1
 	for _, lexeme := range lexemes {
-		if lexeme.Type != models.Variable {
+		if lexeme.Type != lexical.Variable {
 			result = append(result, fmt.Sprintf("<%s> - %s", lexeme.Symbol, lexeme.Type))
 		} else {
 			result = append(result, fmt.Sprintf("<id, %d> - %s %s", varNumber, lexeme.Type, lexeme.Symbol))
@@ -93,7 +92,7 @@ func (l *lexicalAnalyzer) getOutputTokens(lexemes []models.Lexeme) []string {
 	}
 	return result
 }
-func (l *lexicalAnalyzer) getOutputVariables(lexemes []models.Lexeme) []string {
+func (l *lexicalAnalyzer) getOutputVariables(lexemes []lexical.Lexeme) []string {
 	var result []string
 	for i, lexeme := range lexemes {
 		result = append(result, fmt.Sprintf("%d - %s", i+1, lexeme.Symbol))
