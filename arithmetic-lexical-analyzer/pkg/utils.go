@@ -39,7 +39,7 @@ func ReadFileLines(fileName string) ([]string, error) {
 			}
 			return nil, err
 		}
-		line = strings.TrimRight(line, "\n")
+		line = strings.TrimRight(line, "\r\n")
 		lines = append(lines, line)
 	}
 
