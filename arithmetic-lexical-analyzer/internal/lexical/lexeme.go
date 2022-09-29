@@ -14,11 +14,7 @@ type Lexeme struct {
 	Type   LexemeType
 }
 
-func NewLexeme(symbol string) (*Lexeme, error) {
-	lexemeType := getLexemeType(symbol)
-	if lexemeType == Unknown {
-		return nil, errors.New("lexical error: unknown lexeme")
-	}
+func NewLexeme(lexemeType LexemeType, symbol string) (*Lexeme, error) {
 	lexeme := &Lexeme{
 		Symbol: symbol,
 		Type:   lexemeType,

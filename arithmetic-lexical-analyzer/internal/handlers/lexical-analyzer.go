@@ -4,6 +4,7 @@ import (
 	"arithmetic-lexical-analyzer/internal/lexical"
 	"errors"
 	"fmt"
+	"regexp"
 	"strconv"
 )
 
@@ -15,7 +16,7 @@ func NewLexicalAnalyzer() *LexicalAnalyzer {
 
 func (l *LexicalAnalyzer) Start(expression string) ([]string, []string, error) {
 	fmt.Println("#analysis")
-	lexemes, err := l.analysis(expression)
+	lexemes, err := l.analysis(l.getExpressionWithoutSpaces(expression))
 	if err != nil {
 		return nil, nil, err
 	}
@@ -25,18 +26,36 @@ func (l *LexicalAnalyzer) Start(expression string) ([]string, []string, error) {
 }
 
 func (l *LexicalAnalyzer) analysis(expression string) ([]lexical.Lexeme, error) {
-	symbols := make([]string, 3)
 	var lexemes []lexical.Lexeme
+	var lexemeBuffer lexical.LexemeBuffer
 
-	for i, symbol := range symbols {
-		lexeme, err := lexical.NewLexeme(symbol)
+	i := 0
+	lexemePos := 1
+
+	for i < len(expression) {
+		lexeme, err := lexemeBuffer.ReadLexeme(expression, i)
 		if err != nil {
 			return nil, errors.New(err.Error() + " in " + strconv.Itoa(i+1) + " position")
 		}
+		fmt.Println(lexeme.Symbol)
+		i += len(lexeme.Symbol)
 		lexemes = append(lexemes, *lexeme)
+		lexemePos++
 	}
+	//for i, symbol := range expression {
+	//	lexeme, err := lexical.NewLexeme(symbol)
+	//	if err != nil {
+	//		return nil, errors.New(err.Error() + " in " + strconv.Itoa(i+1) + " position")
+	//	}
+	//	lexemes = append(lexemes, *lexeme)
+	//}
 
 	return lexemes, nil
+}
+
+func (l *LexicalAnalyzer) getExpressionWithoutSpaces(expression string) string {
+	regSpaces, _ := regexp.Compile(`\s+`)
+	return regSpaces.ReplaceAllString(expression, "")
 }
 
 func (l *LexicalAnalyzer) getVariablesFromLexemes(lexemes []lexical.Lexeme) []lexical.Lexeme {
