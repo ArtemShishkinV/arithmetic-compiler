@@ -1,4 +1,4 @@
-package lexical
+package models
 
 type LexemeType string
 

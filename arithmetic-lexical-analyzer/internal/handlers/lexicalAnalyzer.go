@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"arithmetic-lexical-analyzer/internal/lexical"
+	"arithmetic-lexical-analyzer/internal/lexical/models"
 	"errors"
 	"fmt"
 	"regexp"
@@ -25,8 +26,8 @@ func (l *LexicalAnalyzer) Start(expression string) ([]string, []string, error) {
 	return tokens, tableVars, nil
 }
 
-func (l *LexicalAnalyzer) analysis(expression string) ([]lexical.Lexeme, error) {
-	var lexemes []lexical.Lexeme
+func (l *LexicalAnalyzer) analysis(expression string) ([]models.Lexeme, error) {
+	var lexemes []models.Lexeme
 	var lexemeBuffer lexical.LexemeBuffer
 
 	i := 0
@@ -50,21 +51,21 @@ func (l *LexicalAnalyzer) getExpressionWithoutSpaces(expression string) string {
 	return regSpaces.ReplaceAllString(expression, "")
 }
 
-func (l *LexicalAnalyzer) getVariablesFromLexemes(lexemes []lexical.Lexeme) []lexical.Lexeme {
-	var varLexemes []lexical.Lexeme
+func (l *LexicalAnalyzer) getVariablesFromLexemes(lexemes []models.Lexeme) []models.Lexeme {
+	var varLexemes []models.Lexeme
 	for _, lexeme := range lexemes {
-		if lexeme.Type == lexical.Variable {
+		if lexeme.Type == models.Variable {
 			varLexemes = append(varLexemes, lexeme)
 		}
 	}
 	return varLexemes
 }
 
-func (l *LexicalAnalyzer) getOutputTokens(lexemes []lexical.Lexeme) []string {
+func (l *LexicalAnalyzer) getOutputTokens(lexemes []models.Lexeme) []string {
 	var result []string
 	varNumber := 1
 	for _, lexeme := range lexemes {
-		if lexeme.Type != lexical.Variable {
+		if lexeme.Type != models.Variable {
 			result = append(result, fmt.Sprintf("<%s> - %s", lexeme.Symbol, lexeme.Type))
 		} else {
 			result = append(result, fmt.Sprintf("<id, %d> - %s %s", varNumber, lexeme.Type, lexeme.Symbol))
@@ -73,7 +74,7 @@ func (l *LexicalAnalyzer) getOutputTokens(lexemes []lexical.Lexeme) []string {
 	}
 	return result
 }
-func (l *LexicalAnalyzer) getOutputVariables(lexemes []lexical.Lexeme) []string {
+func (l *LexicalAnalyzer) getOutputVariables(lexemes []models.Lexeme) []string {
 	var result []string
 	for i, lexeme := range lexemes {
 		result = append(result, fmt.Sprintf("%d - %s", i+1, lexeme.Symbol))
