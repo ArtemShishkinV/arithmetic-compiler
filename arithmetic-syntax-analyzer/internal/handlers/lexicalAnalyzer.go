@@ -11,19 +11,19 @@ import (
 
 type lexicalAnalyzer struct{}
 
-func NewLexicalAnalyzer() *lexicalAnalyzer {
+func newLexicalAnalyzer() *lexicalAnalyzer {
 	return &lexicalAnalyzer{}
 }
 
-func (l *lexicalAnalyzer) Start(expression string) ([]string, []string, error) {
+func (l *lexicalAnalyzer) Start(expression string) ([][]string, error) {
 	fmt.Println("#analysis-lexical")
 	lexemes, err := l.analysis(l.getExpressionWithoutSpaces(expression))
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	tokens := l.getOutputTokens(lexemes)
 	tableVars := l.getOutputVariables(l.getVariablesFromLexemes(lexemes))
-	return tokens, tableVars, nil
+	return [][]string{tokens, tableVars}, nil
 }
 
 func (l *lexicalAnalyzer) analysis(expression string) ([]models.Lexeme, error) {

@@ -1,20 +1,42 @@
 package config
 
-import "errors"
+import (
+	"errors"
+)
+
+const textError = "invalid count of arguments"
 
 type Config struct {
-	SrcFileName        string
-	OutTokensFileName  string
-	OutSymbolsFileName string
+	Mode  Mode
+	Files []string
 }
 
 func NewConfig(args []string) (*Config, error) {
-	if len(args) != 3 {
-		return nil, errors.New("invalid count of arguments")
+	if len(args) == 0 {
+		return nil, errors.New(textError)
 	}
-	return &Config{
-		SrcFileName:        args[0],
-		OutTokensFileName:  args[1],
-		OutSymbolsFileName: args[2],
-	}, nil
+
+	mode, err := GetMode(args[0])
+	if err != nil {
+		return nil, err
+	}
+
+	cfg := &Config{
+		Mode:  mode,
+		Files: args[1:],
+	}
+
+	if err := cfg.checkValid(); err != nil {
+		return nil, err
+	}
+
+	return cfg, nil
+}
+
+func (c *Config) checkValid() error {
+	if c.Mode == Lexical && len(c.Files) != 3 ||
+		c.Mode == Syntax && len(c.Files) != 1 {
+		return errors.New(textError)
+	}
+	return nil
 }

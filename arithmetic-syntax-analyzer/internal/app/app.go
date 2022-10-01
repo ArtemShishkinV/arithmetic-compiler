@@ -18,7 +18,7 @@ func NewApp(config *config.Config) (App, error) {
 }
 
 func (a *App) Run() error {
-	expressions, err := pkg.ReadFileLines(a.cfg.SrcFileName)
+	expressions, err := pkg.ReadFileLines(a.cfg.Files[0])
 	if err != nil {
 		return err
 	}
@@ -26,15 +26,18 @@ func (a *App) Run() error {
 		return errors.New("source file must contain only one string")
 	}
 
-	analyzer := handlers.NewLexicalAnalyzer()
-	tokens, tableVars, err := analyzer.Start(expressions[0])
+	analyzer := handlers.NewHandler(*a.cfg)
+	results, err := analyzer.Start(expressions[0])
 	if err != nil {
 		return err
 	}
-	if err = pkg.WriteFile(tokens, a.cfg.OutTokensFileName); err != nil {
+	if results == nil {
+		return errors.New("implement syntax-analyzer")
+	}
+	if err = pkg.WriteFile(results[0], a.cfg.Files[1]); err != nil {
 		return err
 	}
-	if err = pkg.WriteFile(tableVars, a.cfg.OutSymbolsFileName); err != nil {
+	if err = pkg.WriteFile(results[1], a.cfg.Files[2]); err != nil {
 		return err
 	}
 	return nil

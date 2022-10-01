@@ -14,8 +14,6 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	fmt.Printf("#running\nConfig: %s, %s, %s\n",
-		defConfig.SrcFileName, defConfig.OutTokensFileName, defConfig.OutSymbolsFileName)
 
 	application, _ := app.NewApp(defConfig)
 	if err = application.Run(); err != nil {
