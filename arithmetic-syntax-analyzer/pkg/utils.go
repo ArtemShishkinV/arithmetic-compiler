@@ -7,6 +7,15 @@ import (
 	"strings"
 )
 
+func Contains(s []int, e int) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
+
 func WriteFile(strings []string, fileName string) error {
 	file, err := os.OpenFile(fileName, os.O_WRONLY, 0666)
 	if err != nil {

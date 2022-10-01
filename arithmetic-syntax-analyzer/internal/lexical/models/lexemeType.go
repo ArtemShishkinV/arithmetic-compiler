@@ -11,6 +11,6 @@ const (
 	RightBracket LexemeType = "закрывающая скобка"
 	Variable     LexemeType = "идентификатор с именем"
 	IntNumber    LexemeType = "константа целого типа"
-	FloatNumber  LexemeType = "контсанта вещественного типа"
+	FloatNumber  LexemeType = "константа вещественного типа"
 	Unknown      LexemeType = "неизвестный символ"
 )

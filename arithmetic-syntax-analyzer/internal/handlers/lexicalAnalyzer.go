@@ -17,7 +17,7 @@ func newLexicalAnalyzer() *lexicalAnalyzer {
 
 func (l *lexicalAnalyzer) Start(expression string) ([][]string, error) {
 	fmt.Println("#analysis-lexical")
-	lexemes, err := l.analysis(l.getExpressionWithoutSpaces(expression))
+	lexemes, err := l.analysis(expression)
 	if err != nil {
 		return nil, err
 	}
@@ -29,6 +29,7 @@ func (l *lexicalAnalyzer) Start(expression string) ([][]string, error) {
 func (l *lexicalAnalyzer) analysis(expression string) ([]models.Lexeme, error) {
 	var lexemes []models.Lexeme
 	var lexemeBuffer lexical.LexemeBuffer
+	expression = l.getExpressionWithoutSpaces(expression)
 
 	i := 0
 	lexemePos := 1
