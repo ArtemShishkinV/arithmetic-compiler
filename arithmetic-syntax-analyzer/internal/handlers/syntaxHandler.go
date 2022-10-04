@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"arithmetic-syntax-analyzer/internal/lexical"
+	"arithmetic-syntax-analyzer/internal/lexical/models"
 	"arithmetic-syntax-analyzer/internal/syntax"
 	"fmt"
 )
@@ -13,12 +14,13 @@ func (h *syntaxHandler) Start(expression string) ([][]string, error) {
 	if err != nil {
 		return nil, err
 	}
+	endLexeme, _ := models.NewLexeme(models.Unknown, "")
+	lexemes = append(lexemes, *endLexeme)
 	result, err := syntax.NewSyntaxAnalyzer(lexemes).Analyze()
-	//fmt.Println(err.Error())
 	if err != nil {
 		//fmt.Println(err.Error())
 		return nil, err
 	}
-	fmt.Println(result)
+	fmt.Println(result.ToStringNode())
 	return nil, nil
 }

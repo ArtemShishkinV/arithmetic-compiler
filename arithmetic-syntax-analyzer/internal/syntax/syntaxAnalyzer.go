@@ -2,6 +2,7 @@ package syntax
 
 import (
 	"arithmetic-syntax-analyzer/internal/lexical/models"
+	syntaxModels "arithmetic-syntax-analyzer/internal/syntax/models"
 	"errors"
 	"fmt"
 )
@@ -31,10 +32,10 @@ func NewSyntaxAnalyzer(lexemes []models.Lexeme) *syntaxAnalyzer {
 }
 
 func (s *syntaxAnalyzer) next() models.Lexeme {
-	if len(s.lexemes) == s.pos {
-		newLexeme, _ := models.NewLexeme(models.Unknown, "")
-		return *newLexeme
-	}
+	//if len(s.lexemes) == s.pos {
+	//	newLexeme, _ := models.NewLexeme(models.Unknown, "")
+	//	return *newLexeme
+	//}
 	lexeme := s.lexemes[s.pos]
 	s.pos++
 	return lexeme
@@ -43,83 +44,86 @@ func (s *syntaxAnalyzer) back() {
 	s.pos--
 }
 
-func (s *syntaxAnalyzer) Analyze() (string, error) {
+func (s *syntaxAnalyzer) Analyze() (syntaxModels.Node, error) {
 	return s.plusMinus()
 }
 
-func (s *syntaxAnalyzer) plusMinus() (string, error) {
-	result, err := s.multDiv()
-	var st string
+func (s *syntaxAnalyzer) plusMinus() (syntaxModels.Node, error) {
+	lNode, err := s.multDiv()
+	//var st string
 	if err != nil {
-		return result, err
+		return nil, err
 	}
 	for {
 		lexeme := s.next()
 		switch lexeme.Type {
 		case models.OpPlus, models.OpMinus:
-			st, err = s.multDiv()
-			result = result + string(lexeme.Type) + st
+			rNode, err := s.multDiv()
+			//result = result + string(lexeme.Type) + st
 			if err != nil {
-				return result, err
+				return nil, err
 			}
-			return result, nil
+			lNode = syntaxModels.NewBinaryNode(lexeme, lNode, rNode)
 		case models.RightBracket, models.Unknown:
 			s.back()
-			return result + lexeme.Symbol, nil
+			return lNode, nil
 		default:
-			return result + lexeme.Symbol, errors.New(fmt.Sprintf("syntax error! unexpected token <%s> at %d position", lexeme.Symbol, s.pos))
+			return nil, errors.New(fmt.Sprintf("syntax error! unexpected token <%s> at %d position", lexeme.Symbol, s.pos))
 		}
 	}
 }
 
-func (s *syntaxAnalyzer) multDiv() (string, error) {
-	var st string
-	result, err := s.factor()
+func (s *syntaxAnalyzer) multDiv() (syntaxModels.Node, error) {
+	lNode, err := s.factor()
 	if err != nil {
-		return result, err
+		return nil, err
 	}
 	for {
 		lexeme := s.next()
 		switch lexeme.Type {
 		case models.OpMul, models.OpDiv:
-			st, err = s.factor()
-			result = result + string(lexeme.Type) + st
+			rNode, err := s.factor()
 			if err != nil {
-				return result, err
+				return nil, err
 			}
-			return result, nil
+			lNode = syntaxModels.NewBinaryNode(lexeme, lNode, rNode)
+			//st, err = s.factor()
+			//result = result + string(lexeme.Type) + st
+			//if err != nil {
+			//	return result, err
+			//}
 		case models.RightBracket, models.OpPlus, models.OpMinus, models.Unknown:
 			s.back()
-			return result, nil
+			return lNode, nil
 		default:
-			return result, errors.New(fmt.Sprintf("syntax error! unexpected token <%s> at %d position", lexeme.Symbol, s.pos))
+			return nil, errors.New(fmt.Sprintf("syntax error! unexpected token <%s> at %d position", lexeme.Symbol, s.pos))
 		}
 	}
 }
 
-func (s *syntaxAnalyzer) factor() (string, error) {
+func (s *syntaxAnalyzer) factor() (syntaxModels.Node, error) {
 	lexeme := s.next()
 	oldPos := s.pos
 	switch lexeme.Type {
 	case models.IntNumber:
-		return lexeme.Symbol, nil
+		return syntaxModels.NewOperandNode(lexeme), nil
 	case models.FloatNumber:
-		return lexeme.Symbol, nil
+		return syntaxModels.NewOperandNode(lexeme), nil
 	case models.Variable:
-		return lexeme.Symbol, nil
+		return syntaxModels.NewOperandNode(lexeme), nil
 	case models.LeftBracket:
-		symbol, err := s.plusMinus()
+		node, err := s.plusMinus()
 		if err != nil {
-			return lexeme.Symbol + symbol, err
+			return nil, err
 		}
 		nextLexeme := s.next()
 		if nextLexeme.Type != models.RightBracket {
-			return nextLexeme.Symbol, errors.New(fmt.Sprintf(
+			return nil, errors.New(fmt.Sprintf(
 				"syntax error! missing closing bracket on token <%s> at %d position", lexeme.Symbol, oldPos))
 		}
-		return lexeme.Symbol + symbol + nextLexeme.Symbol, nil
+		return node, nil
 	default:
-		return lexeme.Symbol, errors.New(fmt.Sprintf(
+		return nil, errors.New(fmt.Sprintf(
 			"syntax error! token <%s> has no operand at %d position", lexeme.Symbol, oldPos))
 	}
 }
