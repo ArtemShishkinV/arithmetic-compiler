@@ -5,19 +5,19 @@ import (
 )
 
 type BinaryNode struct {
-	operator  models.Lexeme
-	leftNode  Node
-	rightNode Node
+	Operator  models.Lexeme
+	LeftNode  Node
+	RightNode Node
 }
 
 func NewBinaryNode(operator models.Lexeme, leftNode Node, rightNode Node) Node {
-	return &BinaryNode{
-		operator:  operator,
-		leftNode:  leftNode,
-		rightNode: rightNode,
+	return BinaryNode{
+		Operator:  operator,
+		LeftNode:  leftNode,
+		RightNode: rightNode,
 	}
 }
 
 func (b BinaryNode) ToStringNode() string {
-	return b.leftNode.ToStringNode() + b.operator.Symbol + b.rightNode.ToStringNode()
+	return b.LeftNode.ToStringNode() + b.Operator.Symbol + b.RightNode.ToStringNode()
 }

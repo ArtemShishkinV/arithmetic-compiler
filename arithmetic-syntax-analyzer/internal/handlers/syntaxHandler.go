@@ -4,6 +4,7 @@ import (
 	"arithmetic-syntax-analyzer/internal/lexical"
 	"arithmetic-syntax-analyzer/internal/lexical/models"
 	"arithmetic-syntax-analyzer/internal/syntax"
+	"arithmetic-syntax-analyzer/internal/syntax/writers"
 	"fmt"
 )
 
@@ -21,6 +22,6 @@ func (h *syntaxHandler) Start(expression string) ([][]string, error) {
 		//fmt.Println(err.Error())
 		return nil, err
 	}
-	fmt.Println(result.ToStringNode())
+	fmt.Println(writers.NewTreeBuilder(result).Build())
 	return nil, nil
 }

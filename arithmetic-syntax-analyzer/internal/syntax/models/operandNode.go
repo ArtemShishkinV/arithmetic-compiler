@@ -7,7 +7,7 @@ type OperandNode struct {
 }
 
 func NewOperandNode(lexeme models.Lexeme) Node {
-	return &OperandNode{Lexeme: lexeme}
+	return OperandNode{Lexeme: lexeme}
 }
 
 func (o OperandNode) ToStringNode() string {
