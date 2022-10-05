@@ -22,6 +22,6 @@ func (h *syntaxHandler) Start(expression string) ([][]string, error) {
 		//fmt.Println(err.Error())
 		return nil, err
 	}
-	fmt.Println(writers.NewTreeBuilder(result).Build())
+	fmt.Println(writers.NewTreeBuilder(result).Build().Print())
 	return nil, nil
 }
