@@ -40,7 +40,7 @@ func (t *TreeBuilder) buildTreeByRoot(node models.BinaryNode) gotree.Tree {
 		} else if lOk {
 			tree.Add(node.RightNode.ToStringNode())
 			tree.AddTree(t.buildTreeByRoot(lNode))
-			node = lNode
+			node = rNode
 		} else if rOk {
 			tree.Add(node.LeftNode.ToStringNode())
 			tree.AddTree(t.buildTreeByRoot(rNode))
