@@ -5,12 +5,12 @@ import (
 )
 
 type BinaryNode struct {
-	Operator  models.Lexeme
+	Operator  models.Token
 	LeftNode  Node
 	RightNode Node
 }
 
-func NewBinaryNode(operator models.Lexeme, leftNode Node, rightNode Node) Node {
+func NewBinaryNode(operator models.Token, leftNode Node, rightNode Node) Node {
 	return BinaryNode{
 		Operator:  operator,
 		LeftNode:  leftNode,
@@ -19,5 +19,5 @@ func NewBinaryNode(operator models.Lexeme, leftNode Node, rightNode Node) Node {
 }
 
 func (b BinaryNode) ToStringNode() string {
-	return b.LeftNode.ToStringNode() + b.Operator.Symbol + b.RightNode.ToStringNode()
+	return b.LeftNode.ToStringNode() + b.Operator.Value + b.RightNode.ToStringNode()
 }

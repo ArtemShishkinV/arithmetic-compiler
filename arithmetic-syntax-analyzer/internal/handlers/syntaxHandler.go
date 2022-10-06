@@ -14,11 +14,12 @@ func (h *syntaxHandler) Start(expression string) ([][]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	lexemes = h.prepareLexemesToSyntaxAnalyze(lexemes)
-	result, err := syntax.NewSyntaxAnalyzer(lexemes).Analyze()
+	tokens := lexical.NewTokenBuilder().GetTokens(h.prepareLexemesToSyntaxAnalyze(lexemes))
+	result, err := syntax.NewSyntaxAnalyzer(tokens).Analyze()
 	if err != nil {
 		return nil, err
 	}
+
 	syntaxTree := writers.NewTreeBuilder(result).Build()
 	return [][]string{{syntaxTree.Print()}}, nil
 }

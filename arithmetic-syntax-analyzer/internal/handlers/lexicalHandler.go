@@ -14,8 +14,8 @@ func (h *lexicalHandler) Start(expression string) ([][]string, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	tokens := formaters.NewTokensFormatter().Form(lexemes)
-	vars := formaters.NewVarsFormatter().Form(lexemes)
-	return [][]string{tokens, vars}, nil
+	tokens := lexical.NewTokenBuilder().GetTokens(lexemes)
+	tokensOut := formaters.NewTokensFormatter(tokens).Form()
+	vars := formaters.NewVarsFormatter(tokens).Form()
+	return [][]string{tokensOut, vars}, nil
 }

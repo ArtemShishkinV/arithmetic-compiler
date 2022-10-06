@@ -4,10 +4,12 @@ import (
 	"arithmetic-syntax-analyzer/internal/app"
 	"arithmetic-syntax-analyzer/internal/config"
 	"fmt"
+	"os"
 )
 
 func main() {
-	args := []string{"syn", ".\\files\\source.txt", ".\\files\\syntax_tree.txt"}
+	args := os.Args[1:]
+
 	defConfig, err := config.NewConfig(args)
 	if err != nil {
 		fmt.Println(err)

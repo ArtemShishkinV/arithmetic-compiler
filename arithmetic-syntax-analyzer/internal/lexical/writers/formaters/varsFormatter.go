@@ -5,18 +5,22 @@ import (
 	"fmt"
 )
 
-type varsFormatter struct{}
-
-func NewVarsFormatter() Formatter {
-	return &varsFormatter{}
+type varsFormatter struct {
+	tokens []models.Token
 }
 
-func (v *varsFormatter) Form(lexemes []models.Lexeme) []string {
+func NewVarsFormatter(tokens []models.Token) Formatter {
+	return &varsFormatter{
+		tokens: tokens,
+	}
+}
+
+func (v *varsFormatter) Form() []string {
 	var result []string
 	indexVariable := 1
-	for _, lexeme := range lexemes {
-		if lexeme.Type == models.Variable {
-			result = append(result, fmt.Sprintf("%d - %s", indexVariable, lexeme.Symbol))
+	for _, token := range v.tokens {
+		if token.Lexeme.Type == models.Variable {
+			result = append(result, fmt.Sprintf("%d - %s", indexVariable, token.Lexeme.Symbol))
 			indexVariable++
 		}
 	}

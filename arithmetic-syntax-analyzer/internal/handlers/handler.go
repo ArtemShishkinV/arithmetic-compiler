@@ -6,7 +6,6 @@ import (
 
 type Handler interface {
 	Start(expression string) ([][]string, error)
-	//OutResult(files []string) error
 }
 
 func NewHandler(config2 config.Config) Handler {

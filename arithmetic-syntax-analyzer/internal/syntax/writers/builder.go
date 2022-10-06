@@ -23,7 +23,7 @@ func (t *TreeBuilder) Build() gotree.Tree {
 }
 
 func (t *TreeBuilder) buildTreeByRoot(node models.BinaryNode) gotree.Tree {
-	tree := gotree.New(node.Operator.Symbol)
+	tree := gotree.New(node.Operator.Value)
 	for {
 		lNode, lOk := node.LeftNode.(models.BinaryNode)
 		rNode, rOk := node.RightNode.(models.BinaryNode)

@@ -5,20 +5,24 @@ import (
 	"fmt"
 )
 
-type tokenFormatter struct{}
-
-func NewTokensFormatter() Formatter {
-	return &tokenFormatter{}
+type tokenFormatter struct {
+	tokens []models.Token
 }
 
-func (t *tokenFormatter) Form(lexemes []models.Lexeme) []string {
+func NewTokensFormatter(token []models.Token) Formatter {
+	return &tokenFormatter{
+		tokens: token,
+	}
+}
+
+func (t *tokenFormatter) Form() []string {
 	var result []string
 	varNumber := 1
-	for _, lexeme := range lexemes {
-		if lexeme.Type != models.Variable {
-			result = append(result, fmt.Sprintf("<%s> - %s", lexeme.Symbol, lexeme.Type))
+	for _, token := range t.tokens {
+		if token.Lexeme.Type != models.Variable {
+			result = append(result, fmt.Sprintf("<%s> - %s", token.Value, token.Lexeme.Type))
 		} else {
-			result = append(result, fmt.Sprintf("<id, %d> - %s %s", varNumber, lexeme.Type, lexeme.Symbol))
+			result = append(result, fmt.Sprintf("<%s> - %s %s", token.Value, token.Lexeme.Type, token.Lexeme.Symbol))
 			varNumber++
 		}
 	}

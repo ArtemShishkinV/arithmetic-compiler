@@ -3,13 +3,13 @@ package models
 import "arithmetic-syntax-analyzer/internal/lexical/models"
 
 type OperandNode struct {
-	Lexeme models.Lexeme
+	Token models.Token
 }
 
-func NewOperandNode(lexeme models.Lexeme) Node {
-	return OperandNode{Lexeme: lexeme}
+func NewOperandNode(token models.Token) Node {
+	return OperandNode{Token: token}
 }
 
 func (o OperandNode) ToStringNode() string {
-	return o.Lexeme.Symbol
+	return o.Token.Value
 }
