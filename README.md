@@ -4,3 +4,4 @@
   2) Разработка первой версии лексического анализатора: парсинг регулярными выражениями. (arithmetic-lexical-analyzer)
   3) Разработка окончательной версии лексического анализатора: посимвольный парсинг, 
      благодаря чему выражения валидно парсится в любом виде. (arithmetic-lexical-analyzer: branch - char-by-char-parsing)
+  4) Разработка синтаксического анализатора (arithmetic-syntax-analyzer: branch - convention-syntax-analyzer)
