@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	args := []string{"syn", ".\\files\\source.txt"}
+	args := []string{"syn", ".\\files\\source.txt", ".\\files\\syntax_tree.txt"}
 	defConfig, err := config.NewConfig(args)
 	if err != nil {
 		fmt.Println(err)

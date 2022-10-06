@@ -32,10 +32,6 @@ func NewSyntaxAnalyzer(lexemes []models.Lexeme) *syntaxAnalyzer {
 }
 
 func (s *syntaxAnalyzer) next() models.Lexeme {
-	//if len(s.lexemes) == s.pos {
-	//	newLexeme, _ := models.NewLexeme(models.Unknown, "")
-	//	return *newLexeme
-	//}
 	lexeme := s.lexemes[s.pos]
 	s.pos++
 	return lexeme
@@ -50,7 +46,6 @@ func (s *syntaxAnalyzer) Analyze() (syntaxModels.Node, error) {
 
 func (s *syntaxAnalyzer) plusMinus() (syntaxModels.Node, error) {
 	lNode, err := s.multDiv()
-	//var st string
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +54,6 @@ func (s *syntaxAnalyzer) plusMinus() (syntaxModels.Node, error) {
 		switch lexeme.Type {
 		case models.OpPlus, models.OpMinus:
 			rNode, err := s.multDiv()
-			//result = result + string(lexeme.Type) + st
 			if err != nil {
 				return nil, err
 			}
@@ -87,11 +81,6 @@ func (s *syntaxAnalyzer) multDiv() (syntaxModels.Node, error) {
 				return nil, err
 			}
 			lNode = syntaxModels.NewBinaryNode(lexeme, lNode, rNode)
-			//st, err = s.factor()
-			//result = result + string(lexeme.Type) + st
-			//if err != nil {
-			//	return result, err
-			//}
 		case models.RightBracket, models.OpPlus, models.OpMinus, models.Unknown:
 			s.back()
 			return lNode, nil

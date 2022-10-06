@@ -5,7 +5,6 @@ import (
 	"arithmetic-syntax-analyzer/internal/lexical/models"
 	"arithmetic-syntax-analyzer/internal/syntax"
 	"arithmetic-syntax-analyzer/internal/syntax/writers"
-	"fmt"
 )
 
 type syntaxHandler struct{}
@@ -15,13 +14,17 @@ func (h *syntaxHandler) Start(expression string) ([][]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	endLexeme, _ := models.NewLexeme(models.Unknown, "")
-	lexemes = append(lexemes, *endLexeme)
+	lexemes = h.prepareLexemesToSyntaxAnalyze(lexemes)
 	result, err := syntax.NewSyntaxAnalyzer(lexemes).Analyze()
 	if err != nil {
-		//fmt.Println(err.Error())
 		return nil, err
 	}
-	fmt.Println(writers.NewTreeBuilder(result).Build().Print())
-	return nil, nil
+	syntaxTree := writers.NewTreeBuilder(result).Build()
+	return [][]string{{syntaxTree.Print()}}, nil
+}
+
+func (h *syntaxHandler) prepareLexemesToSyntaxAnalyze(lexemes []models.Lexeme) []models.Lexeme {
+	endLexeme, _ := models.NewLexeme(models.Unknown, "")
+	lexemes = append(lexemes, *endLexeme)
+	return lexemes
 }

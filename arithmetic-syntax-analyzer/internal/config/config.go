@@ -35,7 +35,7 @@ func NewConfig(args []string) (*Config, error) {
 
 func (c *Config) checkValid() error {
 	if c.Mode == Lexical && len(c.Files) != 3 ||
-		c.Mode == Syntax && len(c.Files) != 1 {
+		c.Mode == Syntax && len(c.Files) != 2 {
 		return errors.New(textError)
 	}
 	return nil

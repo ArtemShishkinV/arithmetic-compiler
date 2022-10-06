@@ -17,7 +17,7 @@ func Contains(s []int, e int) bool {
 }
 
 func WriteFile(strings []string, fileName string) error {
-	file, err := os.OpenFile(fileName, os.O_WRONLY, 0666)
+	file, err := os.OpenFile(fileName, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		return err
 	}
