@@ -24,7 +24,8 @@ func (t *TokenBuilder) getTokenValues(lexemes []models.Lexeme) []string {
 	var result []string
 	varNumber := 1
 	for _, lexeme := range lexemes {
-		if lexeme.Type != models.Variable {
+		if lexeme.Type != models.Variable &&
+			lexeme.Type != models.FloatVariable {
 			result = append(result, lexeme.Symbol)
 		} else {
 			result = append(result, "id, "+strconv.Itoa(varNumber))

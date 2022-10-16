@@ -17,12 +17,22 @@ func NewVarsFormatter(tokens []models.Token) Formatter {
 
 func (v *varsFormatter) Form() []string {
 	var result []string
+	var lexType models.LexemeType
 	indexVariable := 1
 	for _, token := range v.tokens {
-		if token.Lexeme.Type == models.Variable {
-			result = append(result, fmt.Sprintf("%d - %s", indexVariable, token.Lexeme.Symbol))
+		lexType = token.Lexeme.Type
+		if lexType == models.Variable || lexType == models.FloatVariable {
+			result = append(result, fmt.Sprintf("%d - %s %s", indexVariable,
+				token.Lexeme.Symbol, v.getSuffixByType(lexType)))
 			indexVariable++
 		}
 	}
 	return result
+}
+
+func (v *varsFormatter) getSuffixByType(lexemeType models.LexemeType) string {
+	if lexemeType == models.Variable {
+		return "[целый]"
+	}
+	return "[вещественный]"
 }

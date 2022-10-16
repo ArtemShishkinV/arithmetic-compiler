@@ -3,6 +3,7 @@ package semantic
 import (
 	models2 "arithmetic-compiler/internal/lexical/models"
 	"errors"
+	"fmt"
 )
 
 type semanticAnalyzer struct {
@@ -21,7 +22,7 @@ func (s *semanticAnalyzer) checkDivisionByZero() error {
 	for i, token := range s.tokens {
 		if token.Lexeme.Type == models2.OpDiv &&
 			(len(s.tokens)-1 != i) {
-			return errors.New("division by zero")
+			return errors.New(fmt.Sprintf("semantic error! division by zero on %d position", i+1))
 		}
 	}
 	return nil
