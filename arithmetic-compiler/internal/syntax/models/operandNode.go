@@ -11,7 +11,7 @@ func NewOperandNode(token models.Token) Node {
 }
 
 func (o OperandNode) ToStringNode() string {
-	return o.Token.Value
+	return o.Token.Lexeme.Symbol
 }
 
 func (o OperandNode) GetToken() models.Token {

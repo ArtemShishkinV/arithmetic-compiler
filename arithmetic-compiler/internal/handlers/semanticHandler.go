@@ -19,15 +19,15 @@ func (h *semanticHandler) Start(expression string) ([][]string, error) {
 		return nil, err
 	}
 	tokens := lexical.NewTokenBuilder().GetTokens(handler.prepareLexemesToSyntaxAnalyze(lexemes))
-	result, err := syntax.NewSyntaxAnalyzer(tokens).Analyze()
-	if err != nil {
-		return nil, err
-	}
-	_, err = semantic.NewSemanticAnalyzer(tokens).Analyze()
+	syntaxTree, err := syntax.NewSyntaxAnalyzer(tokens).Analyze()
 	if err != nil {
 		return nil, err
 	}
 
-	syntaxTree := writers.NewTreeBuilder(result).Build()
-	return [][]string{{syntaxTree.Print()}}, nil
+	semanticTree, err := semantic.NewSemanticAnalyzer(syntaxTree).Analyze()
+	if err != nil {
+		return nil, err
+	}
+	printTree := writers.NewTreeBuilder(semanticTree).Build()
+	return [][]string{{printTree.Print()}}, nil
 }
