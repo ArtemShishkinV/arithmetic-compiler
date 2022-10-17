@@ -21,7 +21,7 @@ func (s *semanticAnalyzer) Analyze() ([]models2.Token, error) {
 func (s *semanticAnalyzer) checkDivisionByZero() error {
 	for i, token := range s.tokens {
 		if token.Lexeme.Type == models2.OpDiv &&
-			(len(s.tokens)-1 != i) {
+			(len(s.tokens)-1 != i) && s.tokens[i+1].Value == "0" {
 			return errors.New(fmt.Sprintf("semantic error! division by zero on %d position", i+1))
 		}
 	}

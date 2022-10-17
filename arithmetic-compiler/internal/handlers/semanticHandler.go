@@ -3,8 +3,8 @@ package handlers
 import (
 	"arithmetic-compiler/internal/lexical"
 	"arithmetic-compiler/internal/semantic"
+	semantic2 "arithmetic-compiler/internal/semantic/writers"
 	"arithmetic-compiler/internal/syntax"
-	"arithmetic-compiler/internal/syntax/writers"
 	"fmt"
 )
 
@@ -28,6 +28,6 @@ func (h *semanticHandler) Start(expression string) ([][]string, error) {
 		return nil, err
 	}
 
-	syntaxTree := writers.NewTreeBuilder(result).Build()
-	return [][]string{{syntaxTree.Print()}}, nil
+	semanticTree := semantic2.NewTreeBuilder(result).Build()
+	return [][]string{{semanticTree.Print()}}, nil
 }

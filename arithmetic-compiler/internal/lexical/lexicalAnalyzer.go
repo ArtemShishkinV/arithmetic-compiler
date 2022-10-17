@@ -3,7 +3,6 @@ package lexical
 import (
 	"arithmetic-compiler/internal/lexical/models"
 	"errors"
-	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -47,8 +46,6 @@ func (l *lexicalAnalyzer) getExpressionWithoutSpaces(expression string) string {
 func (l *lexicalAnalyzer) sliceTypeVarSymbols(lexeme models.Lexeme) *models.Lexeme {
 	if strings.Contains(lexeme.Symbol, "[") {
 		lexeme.Symbol = lexeme.Symbol[:len(lexeme.Symbol)-3]
-		fmt.Println(lexeme.Symbol)
-		//i -= 3
 	}
 	return &lexeme
 }
