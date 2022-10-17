@@ -1,7 +1,6 @@
 package writers
 
 import (
-	models2 "arithmetic-compiler/internal/lexical/models"
 	"arithmetic-compiler/internal/syntax/models"
 	"github.com/disiqueira/gotree"
 )
@@ -56,19 +55,29 @@ func (t *TreeBuilder) buildTreeByRoot(node models.BinaryNode) gotree.Tree {
 }
 
 func (t *TreeBuilder) checkTypesOperand(node models.BinaryNode) models.BinaryNode {
-	if (node.LeftNode.GetToken().Lexeme.Type == models2.Variable || node.LeftNode.GetToken().Lexeme.Type == models2.IntNumber) &&
-		(node.RightNode.GetToken().Lexeme.Type == models2.FloatVariable || node.RightNode.GetToken().Lexeme.Type == models2.FloatNumber) {
-		token := node.LeftNode.GetToken()
-		token.Value = "(Int2Float) " + node.LeftNode.GetToken().Lexeme.Symbol
-		newNode := models.NewBinaryNode(node.Operator, models.NewOperandNode(token), node.RightNode)
-		return newNode.(models.BinaryNode)
+	token := node.Operator
+	if node.LeftNode.GetNodeResult() == models.Float && node.RightNode.GetNodeResult() == models.Integer ||
+		node.LeftNode.GetNodeResult() == models.Integer && node.RightNode.GetNodeResult() == models.Float {
+		token.Value = "(Int2Float) " + node.Operator.Value
 	}
-	if (node.RightNode.GetToken().Lexeme.Type == models2.Variable || node.RightNode.GetToken().Lexeme.Type == models2.IntNumber) &&
-		(node.LeftNode.GetToken().Lexeme.Type == models2.FloatVariable || node.LeftNode.GetToken().Lexeme.Type == models2.FloatNumber) {
-		token := node.RightNode.GetToken()
-		token.Value = "(Int2Float) " + node.RightNode.GetToken().Lexeme.Symbol
-		newNode := models.NewBinaryNode(node.Operator, node.LeftNode, models.NewOperandNode(token))
-		return newNode.(models.BinaryNode)
-	}
-	return node
+
+	newNode := models.NewBinaryNode(token, node.LeftNode, node.RightNode)
+
+	//lNodeType := node.LeftNode.GetToken().Lexeme.Type
+	//rNodeType := node.RightNode.GetToken().Lexeme.Type
+
+	//if models2.IsIntType(lNodeType) && models2.IsFloatType(rNodeType) {
+	//	token := node.LeftNode.GetToken()
+	//	token.Value = "(Int2Float) " + node.LeftNode.GetToken().Lexeme.Symbol
+	//	newNode := models.NewBinaryNode(node.Operator, models.NewOperandNode(token), node.RightNode)
+	//	return newNode.(models.BinaryNode)
+	//}
+	//
+	//if models2.IsIntType(rNodeType) && (models2.IsFloatType(lNodeType)) {
+	//	token := node.RightNode.GetToken()
+	//	token.Value = "(Int2Float) " + node.RightNode.GetToken().Lexeme.Symbol
+	//	newNode := models.NewBinaryNode(node.Operator, node.LeftNode, models.NewOperandNode(token))
+	//	return newNode.(models.BinaryNode)
+	//}
+	return newNode.(models.BinaryNode)
 }

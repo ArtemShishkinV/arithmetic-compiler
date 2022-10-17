@@ -15,3 +15,11 @@ const (
 	FloatNumber   LexemeType = "константа вещественного типа"
 	Unknown       LexemeType = "неизвестный символ"
 )
+
+func IsIntType(lexemeType LexemeType) bool {
+	return lexemeType == IntNumber || lexemeType == Variable
+}
+
+func IsFloatType(lexemeType LexemeType) bool {
+	return lexemeType == FloatVariable || lexemeType == FloatNumber
+}
