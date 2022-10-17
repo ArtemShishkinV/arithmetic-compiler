@@ -100,6 +100,8 @@ func (s *syntaxAnalyzer) factor() (syntaxModels.Node, error) {
 		return syntaxModels.NewOperandNode(token), nil
 	case models.Variable:
 		return syntaxModels.NewOperandNode(token), nil
+	case models.FloatVariable:
+		return syntaxModels.NewOperandNode(token), nil
 	case models.LeftBracket:
 		node, err := s.plusMinus()
 		if err != nil {
