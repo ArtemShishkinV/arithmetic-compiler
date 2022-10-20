@@ -57,13 +57,17 @@ func (t *TreeBuilder) buildTreeByRoot(node models.BinaryNode) gotree.Tree {
 }
 
 func (t *TreeBuilder) checkTypesOperand(node models.BinaryNode) models.BinaryNode {
-	_, lOk := node.LeftNode.(models.BinaryNode)
-	_, rOk := node.RightNode.(models.BinaryNode)
+	lNode, lOk := node.LeftNode.(models.BinaryNode)
+	rNode, rOk := node.RightNode.(models.BinaryNode)
 
 	if lOk && rOk {
-		if t.checkTypesNode(node.LeftNode, node.RightNode) ||
-			t.checkTypesNode(node.RightNode, node.LeftNode) {
-			node.Operator = t.getConvertNode(models.NewOperandNode(node.Operator)).GetToken()
+		if t.checkTypesNode(node.RightNode, node.LeftNode) {
+			lNode.Operator = t.getConvertNode(models.NewOperandNode(node.Operator)).GetToken()
+			node.LeftNode = lNode
+		}
+		if t.checkTypesNode(node.LeftNode, node.RightNode) {
+			rNode.Operator = t.getConvertNode(models.NewOperandNode(node.Operator)).GetToken()
+			node.RightNode = rNode
 		}
 		return node
 	}
