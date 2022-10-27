@@ -4,13 +4,13 @@ import (
 	"arithmetic-compiler/internal/app"
 	"arithmetic-compiler/internal/config"
 	"fmt"
+	"os"
 	"time"
 )
 
 func main() {
 	start := time.Now()
-	//args := os.Args[1:]
-	args := []string{"sem", ".\\files\\source.txt", ".\\files\\tree.txt"}
+	args := os.Args[1:]
 	defConfig, err := config.NewConfig(args)
 	if err != nil {
 		fmt.Println(err)

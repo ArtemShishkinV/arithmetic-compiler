@@ -9,7 +9,11 @@ type OperandNode struct {
 
 func NewOperandNode(token models.Token) Node {
 	operandNode := OperandNode{Token: token}
-	operandNode.NodeResult = operandNode.getTypeResult()
+	if token.Lexeme.Type == models.Int2Float {
+		operandNode.NodeResult = Float
+	} else {
+		operandNode.NodeResult = operandNode.getTypeResult()
+	}
 	return operandNode
 }
 

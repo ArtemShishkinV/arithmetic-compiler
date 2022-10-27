@@ -57,25 +57,23 @@ func (t *TreeBuilder) buildTreeByRoot(node models.BinaryNode) gotree.Tree {
 }
 
 func (t *TreeBuilder) checkTypesOperand(node models.BinaryNode) models.BinaryNode {
-	lNode, lOk := node.LeftNode.(models.BinaryNode)
-	rNode, rOk := node.RightNode.(models.BinaryNode)
+	//lNode, lOk := node.LeftNode.(models.BinaryNode)
+	//rNode, rOk := node.RightNode.(models.BinaryNode)
 
-	if lOk && rOk {
-		if t.checkTypesNode(node.RightNode, node.LeftNode) {
-			lNode.Operator = t.getConvertNode(models.NewOperandNode(node.Operator)).GetToken()
-			node.LeftNode = lNode
-		}
-		if t.checkTypesNode(node.LeftNode, node.RightNode) {
-			rNode.Operator = t.getConvertNode(models.NewOperandNode(node.Operator)).GetToken()
-			node.RightNode = rNode
-		}
-		return node
-	}
+	//if lOk && rOk {
+	//	if t.checkTypesNode(node.RightNode, node.LeftNode) {
+	//		lNode.Operator = models.NewConvertNode().GetToken()
+	//	}
+	//	if t.checkTypesNode(node.LeftNode, node.RightNode) {
+	//		rNode.Operator = models.NewConvertNode().GetToken()
+	//	}
+	//	return node
+	//}
 
 	if t.checkTypesNode(node.LeftNode, node.RightNode) {
-		node.RightNode = t.getConvertNode(node.RightNode)
+		node.RightNode = models.NewBinaryNode(node.Operator, node.LeftNode, t.getConvertNode(node.RightNode))
 	} else if t.checkTypesNode(node.RightNode, node.LeftNode) {
-		node.LeftNode = t.getConvertNode(node.LeftNode)
+		node.LeftNode = models.NewBinaryNode(node.Operator, t.getConvertNode(node.LeftNode), node.RightNode)
 	}
 
 	return node
@@ -87,6 +85,6 @@ func (t TreeBuilder) checkTypesNode(node1 models.Node, node2 models.Node) bool {
 
 func (t TreeBuilder) getConvertNode(src models.Node) models.Node {
 	token := src.GetToken()
-	token.Value = string(models2.Int2Float) + token.Value
+	token.Value = string(models2.Int2Float)
 	return models.NewOperandNode(token)
 }
