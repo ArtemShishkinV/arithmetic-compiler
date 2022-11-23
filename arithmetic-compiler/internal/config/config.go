@@ -34,8 +34,8 @@ func NewConfig(args []string) (*Config, error) {
 }
 
 func (c *Config) checkValid() error {
-	if c.Mode == Lexical && len(c.Files) != 3 ||
-		c.Mode == Syntax && len(c.Files) != 2 {
+	if (c.Mode == Lexical || c.Mode == Generator1 || c.Mode == Generator2) && len(c.Files) != 3 ||
+		c.Mode == Syntax || c.Mode == Semantic && len(c.Files) != 2 {
 		return errors.New(textError)
 	}
 	return nil

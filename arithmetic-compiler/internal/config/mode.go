@@ -8,10 +8,12 @@ import (
 type Mode string
 
 const (
-	Lexical  Mode = "lex"
-	Syntax   Mode = "syn"
-	Semantic Mode = "sem"
-	Unknown  Mode = "unknown"
+	Lexical    Mode = "lex"
+	Syntax     Mode = "syn"
+	Semantic   Mode = "sem"
+	Generator1 Mode = "gen1"
+	Generator2 Mode = "gen2"
+	Unknown    Mode = "unknown"
 )
 
 func GetMode(mode string) (Mode, error) {
@@ -26,6 +28,14 @@ func GetMode(mode string) (Mode, error) {
 
 	if mode == string(Semantic) {
 		return Semantic, nil
+	}
+
+	if mode == string(Generator1) {
+		return Generator1, nil
+	}
+
+	if mode == string(Generator2) {
+		return Generator2, nil
 	}
 
 	return Unknown, errors.New("unknown operating mode")
