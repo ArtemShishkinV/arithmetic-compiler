@@ -11,6 +11,7 @@ import (
 func main() {
 	start := time.Now()
 	args := os.Args[1:]
+	fmt.Println(args)
 	defConfig, err := config.NewConfig(args)
 	if err != nil {
 		fmt.Println(err)

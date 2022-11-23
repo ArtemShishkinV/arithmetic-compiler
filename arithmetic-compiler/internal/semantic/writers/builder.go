@@ -14,18 +14,19 @@ func NewTreeBuilder(node models.Node) *TreeBuilder {
 	return &TreeBuilder{node: node}
 }
 
-func (t *TreeBuilder) Build() gotree.Tree {
+func (t *TreeBuilder) Build() (gotree.Tree, models.Node) {
 	node := t.node
 	root, ok := node.(models.BinaryNode)
 	if !ok {
-		return gotree.New(node.ToStringNode())
+		return gotree.New(node.ToStringNode()), t.node
 	}
 	root = t.checkTypesOperand(root)
 	return t.buildTreeByRoot(root)
 }
 
-func (t *TreeBuilder) buildTreeByRoot(node models.BinaryNode) gotree.Tree {
+func (t *TreeBuilder) buildTreeByRoot(node models.BinaryNode) (gotree.Tree, models.Node) {
 	var clNode, crNode models.ConvertNode
+	var newTree gotree.Tree
 	tree := gotree.New(node.Operator.Value)
 	for {
 		lNode, lOk := node.LeftNode.(models.BinaryNode)
@@ -47,12 +48,15 @@ func (t *TreeBuilder) buildTreeByRoot(node models.BinaryNode) gotree.Tree {
 		} else if lOk && rOk {
 			lNode = t.checkTypesOperand(lNode)
 			rNode = t.checkTypesOperand(rNode)
-			tree.AddTree(t.buildTreeByRoot(lNode))
-			tree.AddTree(t.buildTreeByRoot(rNode))
+			newTree, _ = t.buildTreeByRoot(lNode)
+			tree.AddTree(newTree)
+			newTree, _ = t.buildTreeByRoot(rNode)
+			tree.AddTree(newTree)
 			break
 		} else if lOk {
 			lNode = t.checkTypesOperand(lNode)
-			tree.AddTree(t.buildTreeByRoot(lNode))
+			newTree, _ = t.buildTreeByRoot(lNode)
+			tree.AddTree(newTree)
 			crNode, rOk = node.RightNode.(models.ConvertNode)
 			if rOk {
 				tree.AddTree(t.createConvertTree(crNode))
@@ -68,11 +72,12 @@ func (t *TreeBuilder) buildTreeByRoot(node models.BinaryNode) gotree.Tree {
 			} else {
 				tree.Add(node.LeftNode.ToStringNode())
 			}
-			tree.AddTree(t.buildTreeByRoot(rNode))
+			newTree, _ = t.buildTreeByRoot(rNode)
+			tree.AddTree(newTree)
 			node = lNode
 		}
 	}
-	return tree
+	return tree, node
 }
 
 func (t *TreeBuilder) checkTypesOperand(node models.BinaryNode) models.BinaryNode {
@@ -111,7 +116,8 @@ func (t TreeBuilder) createConvertTree(node models.ConvertNode) gotree.Tree {
 	convertTree := gotree.New(node.GetConvertNode().ToStringNode())
 	bNode, ok := node.GetOperandNode().(models.BinaryNode)
 	if ok {
-		convertTree.AddTree(t.buildTreeByRoot(bNode))
+		tree, _ := t.buildTreeByRoot(bNode)
+		convertTree.AddTree(tree)
 	} else {
 		convertTree.Add(node.GetOperandNode().ToStringNode())
 	}
