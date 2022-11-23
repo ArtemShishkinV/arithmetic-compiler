@@ -15,10 +15,10 @@ func NewGeneratorCodeHandler(handler semanticHandler) Handler {
 
 func (g *codeGeneratorHandler) Start(expression string) ([][]string, error) {
 	fmt.Println("#generator-code")
-	_, semanticNode, err := g.semHandler.GetSemanticTree(expression)
+	tree, semanticNode, err := g.semHandler.GetSemanticTree(expression)
 	if err != nil {
 		return nil, err
 	}
 	code.NewCodeGenerator(semanticNode).GetThreeAddressCode()
-	return [][]string{{}}, nil
+	return [][]string{{tree.Print()}}, nil
 }

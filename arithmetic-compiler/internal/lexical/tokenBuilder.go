@@ -2,6 +2,7 @@ package lexical
 
 import (
 	"arithmetic-compiler/internal/lexical/models"
+	"golang.org/x/exp/slices"
 	"strconv"
 )
 
@@ -22,14 +23,16 @@ func (t *TokenBuilder) GetTokens(lexemes []models.Lexeme) []models.Token {
 
 func (t *TokenBuilder) getTokenValues(lexemes []models.Lexeme) []string {
 	var result []string
-	varNumber := 1
+	var variables []models.Lexeme
 	for _, lexeme := range lexemes {
 		if lexeme.Type != models.Variable &&
 			lexeme.Type != models.FloatVariable {
 			result = append(result, lexeme.Symbol)
 		} else {
-			result = append(result, "id, "+strconv.Itoa(varNumber))
-			varNumber++
+			if !slices.Contains(variables, lexeme) {
+				variables = append(variables, lexeme)
+			}
+			result = append(result, "id, "+strconv.Itoa(len(variables)))
 		}
 	}
 	return result
