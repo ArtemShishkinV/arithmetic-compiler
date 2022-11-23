@@ -55,13 +55,17 @@ func (t *TreeBuilder) buildTreeByRoot(node models.BinaryNode) (gotree.Tree, mode
 			break
 		} else if lOk {
 			lNode = t.checkTypesOperand(lNode)
-			newTree, _ = t.buildTreeByRoot(lNode)
+			newTree, node.LeftNode = t.buildTreeByRoot(lNode)
 			tree.AddTree(newTree)
 			crNode, rOk = node.RightNode.(models.ConvertNode)
 			if rOk {
 				tree.AddTree(t.createConvertTree(crNode))
 			} else {
 				tree.Add(node.RightNode.ToStringNode())
+			}
+			if rNode.NodeResult == "" {
+				//node.LeftNode = lNode
+				return tree, node
 			}
 			node = rNode
 		} else if rOk {
@@ -72,8 +76,12 @@ func (t *TreeBuilder) buildTreeByRoot(node models.BinaryNode) (gotree.Tree, mode
 			} else {
 				tree.Add(node.LeftNode.ToStringNode())
 			}
-			newTree, _ = t.buildTreeByRoot(rNode)
+			newTree, node.RightNode = t.buildTreeByRoot(rNode)
 			tree.AddTree(newTree)
+			if lNode.NodeResult == "" {
+				//node.RightNode = rNode
+				return tree, node
+			}
 			node = lNode
 		}
 	}
