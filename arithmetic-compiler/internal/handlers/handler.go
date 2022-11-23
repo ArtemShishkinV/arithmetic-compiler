@@ -19,5 +19,13 @@ func NewHandler(config2 config.Config) Handler {
 		return &semanticHandler{}
 	}
 
+	if config2.Mode == config.Generator1 {
+		return &generatorCodeHandler{}
+	}
+
+	if config2.Mode == config.Generator2 {
+		return &generatorPostfixHandler{}
+	}
+
 	return nil
 }
