@@ -4,7 +4,6 @@ import (
 	"arithmetic-compiler/internal/code/models"
 	models2 "arithmetic-compiler/internal/lexical/models"
 	models3 "arithmetic-compiler/internal/syntax/models"
-	"fmt"
 	"golang.org/x/exp/slices"
 	"strings"
 )
@@ -29,14 +28,16 @@ func (g *postfixGenerator) getPostfixExpression() []string {
 	var operators []string
 	var operands []string
 
-	for _, item := range g.actions {
-		operators = append(operators, fmt.Sprintf("<%s>", item.GetOperator().Value))
-	}
-
-	tokenOperands := g.filteredOperands()
-	fmt.Println(tokenOperands)
-	for i := len(tokenOperands) - 1; i >= 0; i-- {
-		operands = append(operands, tokenOperands[i].Value)
+	for i := 0; i < len(g.actions); i++ {
+		for _, j := range g.actions[i].GetOperands() {
+			if j.Lexeme.Type != models2.Result &&
+				(slices.Contains(g.vars, j) ||
+					j.Lexeme.Type == models2.FloatNumber ||
+					j.Lexeme.Type == models2.IntNumber) {
+				operands = append(operands, j.Value)
+			}
+		}
+		operands = append(operands, g.actions[i].GetOperator().Value)
 	}
 
 	return g.concatOperandsAndOperators(operands, operators)
