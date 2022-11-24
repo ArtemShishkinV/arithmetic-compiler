@@ -4,6 +4,7 @@ import (
 	models2 "arithmetic-compiler/internal/lexical/models"
 	"errors"
 	"fmt"
+	"golang.org/x/exp/slices"
 )
 
 type semanticAnalyzer struct {
@@ -16,6 +17,17 @@ func NewSemanticAnalyzer(tokens []models2.Token) *semanticAnalyzer {
 
 func (s *semanticAnalyzer) Analyze() ([]models2.Token, error) {
 	return s.tokens, s.checkErrors()
+}
+
+func (s *semanticAnalyzer) GetVars() []models2.Token {
+	var vars []models2.Token
+	for _, token := range s.tokens {
+		if (token.Lexeme.Type == models2.Variable ||
+			token.Lexeme.Type == models2.FloatVariable) && !slices.Contains(vars, token) {
+			vars = append(vars, token)
+		}
+	}
+	return vars
 }
 
 func (s *semanticAnalyzer) checkErrors() error {

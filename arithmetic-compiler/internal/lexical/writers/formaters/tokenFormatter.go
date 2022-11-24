@@ -23,7 +23,7 @@ func (t *tokenFormatter) Form() []string {
 			token.Lexeme.Type != models.FloatVariable {
 			result = append(result, fmt.Sprintf("<%s> - %s", token.Value, token.Lexeme.Type))
 		} else {
-			result = append(result, fmt.Sprintf("<%s> - %s %s", token.Value, token.Lexeme.Type, token.Lexeme.Symbol))
+			result = append(result, fmt.Sprintf("%s - %s %s", token.Value, token.Lexeme.Type, token.Lexeme.Symbol))
 			varNumber++
 		}
 	}

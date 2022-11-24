@@ -18,7 +18,7 @@ func NewConvertNode(node Node) Node {
 }
 
 func (c ConvertNode) ToStringNode() string {
-	return c.convertNode.GetToken().Value + " " + c.opNode.ToStringNode()
+	return c.convertNode.GetToken().Value + " (" + c.opNode.ToStringNode() + ")"
 }
 
 func (c ConvertNode) GetToken() models.Token {

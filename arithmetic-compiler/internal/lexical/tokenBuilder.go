@@ -32,7 +32,7 @@ func (t *TokenBuilder) getTokenValues(lexemes []models.Lexeme) []string {
 			if !slices.Contains(variables, lexeme) {
 				variables = append(variables, lexeme)
 			}
-			result = append(result, "id, "+strconv.Itoa(len(variables)))
+			result = append(result, "<id,"+strconv.Itoa(len(variables))+">")
 		}
 	}
 	return result
