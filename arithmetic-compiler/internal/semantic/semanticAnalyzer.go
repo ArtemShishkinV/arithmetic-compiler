@@ -7,19 +7,19 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-type semanticAnalyzer struct {
+type SemanticAnalyzer struct {
 	tokens []models2.Token
 }
 
-func NewSemanticAnalyzer(tokens []models2.Token) *semanticAnalyzer {
-	return &semanticAnalyzer{tokens: tokens}
+func NewSemanticAnalyzer(tokens []models2.Token) *SemanticAnalyzer {
+	return &SemanticAnalyzer{tokens: tokens}
 }
 
-func (s *semanticAnalyzer) Analyze() ([]models2.Token, error) {
+func (s *SemanticAnalyzer) Analyze() ([]models2.Token, error) {
 	return s.tokens, s.checkErrors()
 }
 
-func (s *semanticAnalyzer) GetVars() []models2.Token {
+func (s *SemanticAnalyzer) GetVars() []models2.Token {
 	var vars []models2.Token
 	for _, token := range s.tokens {
 		if (token.Lexeme.Type == models2.Variable ||
@@ -30,7 +30,7 @@ func (s *semanticAnalyzer) GetVars() []models2.Token {
 	return vars
 }
 
-func (s *semanticAnalyzer) checkErrors() error {
+func (s *SemanticAnalyzer) checkErrors() error {
 	err := s.checkDivisionByZero()
 	if err != nil {
 		return err
@@ -38,7 +38,7 @@ func (s *semanticAnalyzer) checkErrors() error {
 	return s.checkRepeatVariablesType()
 }
 
-func (s *semanticAnalyzer) checkDivisionByZero() error {
+func (s *SemanticAnalyzer) checkDivisionByZero() error {
 	for i, token := range s.tokens {
 		if token.Lexeme.Type == models2.OpDiv &&
 			(len(s.tokens)-1 != i) && s.tokens[i+1].Value == "0" {
@@ -48,7 +48,7 @@ func (s *semanticAnalyzer) checkDivisionByZero() error {
 	return nil
 }
 
-func (s *semanticAnalyzer) checkRepeatVariablesType() error {
+func (s *SemanticAnalyzer) checkRepeatVariablesType() error {
 	for _, token := range s.tokens {
 		if token.Lexeme.Type == models2.Variable {
 			if err := s.checkContainsVariablesInTokens(token); err != nil {
@@ -59,7 +59,7 @@ func (s *semanticAnalyzer) checkRepeatVariablesType() error {
 	return nil
 }
 
-func (s *semanticAnalyzer) checkContainsVariablesInTokens(token models2.Token) error {
+func (s *SemanticAnalyzer) checkContainsVariablesInTokens(token models2.Token) error {
 	for i, tkn := range s.tokens {
 		if tkn.Lexeme.Symbol == token.Lexeme.Symbol && tkn.Lexeme.Type != token.Lexeme.Type {
 			return errors.New(fmt.Sprintf("semantic error! variable on %d position already defined!", i+1))

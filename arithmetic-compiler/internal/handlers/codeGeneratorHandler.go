@@ -2,15 +2,13 @@ package handlers
 
 import (
 	"arithmetic-compiler/internal/code"
-	"arithmetic-compiler/internal/lexical"
-	"arithmetic-compiler/internal/semantic"
-	semantic2 "arithmetic-compiler/internal/semantic/writers"
-	"arithmetic-compiler/internal/syntax"
+	models2 "arithmetic-compiler/internal/code/models"
 	"fmt"
 )
 
 type codeGeneratorHandler struct {
 	semHandler semanticHandler
+	generator  code.CodeGenerator
 }
 
 func NewGeneratorCodeHandler(handler semanticHandler) Handler {
@@ -19,35 +17,29 @@ func NewGeneratorCodeHandler(handler semanticHandler) Handler {
 
 func (g *codeGeneratorHandler) Start(expression string) ([][]string, error) {
 	fmt.Println("#generator-code")
-
-	handler := syntaxHandler{}
-	lexemes, err := lexical.NewLexicalAnalyzer().Analyze(expression)
+	_, node, err := g.semHandler.GetSemanticTree(expression)
 	if err != nil {
 		return nil, err
 	}
-	tokens := lexical.NewTokenBuilder().GetTokens(handler.prepareLexemesToSyntaxAnalyze(lexemes))
 
-	result, err := syntax.NewSyntaxAnalyzer(tokens).Analyze()
-	if err != nil {
-		return nil, err
-	}
-	semAnalyzer := semantic.NewSemanticAnalyzer(tokens)
-
-	if _, err = semAnalyzer.Analyze(); err != nil {
-		return nil, err
-	}
-
-	tree, node := semantic2.NewTreeBuilder(result).Build()
-
-	generator := code.NewCodeGenerator(semAnalyzer.GetVars())
+	generator := code.NewCodeGenerator(g.semHandler.analyzer.GetVars())
 	generator.GetThreeAddressCode(node)
 
-	for _, item := range generator.Codes {
-		fmt.Println(item.ToString())
-	}
-	for _, item := range generator.Tables {
-		fmt.Println(item)
-	}
+	return [][]string{g.prepareToOutCode(generator.Codes), g.prepareToOutTables(generator.Tables)}, nil
+}
 
-	return [][]string{{tree.Print()}}, nil
+func (g *codeGeneratorHandler) prepareToOutCode(code []models2.ThreeAddressCode) []string {
+	var codes []string
+	for _, item := range code {
+		codes = append(codes, item.ToString())
+	}
+	return codes
+}
+
+func (g *codeGeneratorHandler) prepareToOutTables(table []models2.TableDtoCode) []string {
+	var codes []string
+	for _, item := range table {
+		codes = append(codes, item.ToString())
+	}
+	return codes
 }

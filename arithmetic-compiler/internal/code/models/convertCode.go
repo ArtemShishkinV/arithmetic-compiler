@@ -32,3 +32,11 @@ func (c *convertCode) GetResult() string {
 func (c *convertCode) ToString() string {
 	return fmt.Sprintf("%s %s %s", string(c.operation), c.result, c.operand)
 }
+
+func (c *convertCode) GetOperator() string {
+	return string(c.operation)
+}
+
+func (c *convertCode) GetOperands() []string {
+	return []string{c.operand}
+}

@@ -34,3 +34,11 @@ func (o *operatorCode) GetResult() string {
 func (o *operatorCode) ToString() string {
 	return fmt.Sprintf("%s %s %s %s", string(o.operation), o.result, o.first, o.second)
 }
+
+func (o *operatorCode) GetOperator() string {
+	return string(o.operation)
+}
+
+func (o *operatorCode) GetOperands() []string {
+	return []string{o.first, o.second}
+}

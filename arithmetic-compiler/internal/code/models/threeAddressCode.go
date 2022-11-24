@@ -8,6 +8,8 @@ import (
 type ThreeAddressCode interface {
 	ToString() string
 	GetResult() string
+	GetOperator() string
+	GetOperands() []string
 }
 
 func NewThreeAddressCode(

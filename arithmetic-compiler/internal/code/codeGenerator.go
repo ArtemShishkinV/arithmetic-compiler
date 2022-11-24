@@ -7,14 +7,14 @@ import (
 	"strconv"
 )
 
-type codeGenerator struct {
+type CodeGenerator struct {
 	offsetId int
 	Codes    []models2.ThreeAddressCode
 	Tables   []models2.TableDtoCode
 }
 
-func NewCodeGenerator(vars []models3.Token) *codeGenerator {
-	generator := &codeGenerator{
+func NewCodeGenerator(vars []models3.Token) *CodeGenerator {
+	generator := &CodeGenerator{
 		offsetId: len(vars) + 1,
 	}
 	generator.addVarsInTable(vars)
@@ -22,7 +22,7 @@ func NewCodeGenerator(vars []models3.Token) *codeGenerator {
 	return generator
 }
 
-func (g *codeGenerator) GetThreeAddressCode(parNode models.Node) models2.ThreeAddressCode {
+func (g *CodeGenerator) GetThreeAddressCode(parNode models.Node) models2.ThreeAddressCode {
 	var clNode, crNode models.ConvertNode
 	var code models2.ThreeAddressCode
 	node, ok := parNode.(models.BinaryNode)
@@ -84,7 +84,7 @@ func (g *codeGenerator) GetThreeAddressCode(parNode models.Node) models2.ThreeAd
 	return code
 }
 
-func (g *codeGenerator) createCodesWithConvert(node models.BinaryNode, convertNode models.ConvertNode) models2.ThreeAddressCode {
+func (g *CodeGenerator) createCodesWithConvert(node models.BinaryNode, convertNode models.ConvertNode) models2.ThreeAddressCode {
 	var tempCode, code models2.ThreeAddressCode
 	tempCode = g.GetThreeAddressCode(convertNode)
 	g.addCode(tempCode, convertNode)
@@ -110,7 +110,7 @@ func (g *codeGenerator) createCodesWithConvert(node models.BinaryNode, convertNo
 	return code
 }
 
-func (g *codeGenerator) getCodeByNodeType(parNode models.Node) models2.ThreeAddressCode {
+func (g *CodeGenerator) getCodeByNodeType(parNode models.Node) models2.ThreeAddressCode {
 	var code models2.ThreeAddressCode
 
 	node, ok := parNode.(models.ConvertNode)
@@ -132,13 +132,13 @@ func (g *codeGenerator) getCodeByNodeType(parNode models.Node) models2.ThreeAddr
 	return code
 }
 
-func (g *codeGenerator) addCode(code models2.ThreeAddressCode, node models.Node) {
+func (g *CodeGenerator) addCode(code models2.ThreeAddressCode, node models.Node) {
 	g.Tables = append(g.Tables,
 		models2.NewTableDtoCode(code.GetResult(), "T"+strconv.Itoa(len(g.Codes)+1), node.GetNodeResult()))
 	g.Codes = append(g.Codes, code)
 }
 
-func (g *codeGenerator) addVarsInTable(vars []models3.Token) {
+func (g *CodeGenerator) addVarsInTable(vars []models3.Token) {
 	for _, item := range vars {
 		g.Tables = append(g.Tables,
 			models2.NewTableDtoCode(item.Value, item.Lexeme.Symbol,

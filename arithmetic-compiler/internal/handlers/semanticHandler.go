@@ -10,7 +10,9 @@ import (
 	"github.com/disiqueira/gotree"
 )
 
-type semanticHandler struct{}
+type semanticHandler struct {
+	analyzer semantic.SemanticAnalyzer
+}
 
 func (h *semanticHandler) Start(expression string) ([][]string, error) {
 	fmt.Println("#analysis-semantic")
@@ -33,7 +35,10 @@ func (h *semanticHandler) GetSemanticTree(expression string) (gotree.Tree, model
 	if err != nil {
 		return nil, result, err
 	}
-	_, err = semantic.NewSemanticAnalyzer(tokens).Analyze()
+
+	h.analyzer = *semantic.NewSemanticAnalyzer(tokens)
+
+	_, err = h.analyzer.Analyze()
 	if err != nil {
 		return nil, result, err
 	}
