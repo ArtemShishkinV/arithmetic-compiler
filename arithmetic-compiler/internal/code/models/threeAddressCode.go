@@ -8,18 +8,18 @@ import (
 type ThreeAddressCode interface {
 	ToString() string
 	GetResult() string
-	GetOperator() string
-	GetOperands() []string
+	GetOperator() models2.Token
+	GetOperands() []models2.Token
 }
 
 func NewThreeAddressCode(
-	lexemeType models2.LexemeType,
+	token models2.Token,
 	order int,
-	operands []string) (ThreeAddressCode, error) {
-	operation, _ := GetCodeOperation(lexemeType)
+	operands []models2.Token) (ThreeAddressCode, error) {
+	operation, _ := GetCodeOperation(token)
 	result := fmt.Sprintf("<id,%d>", order)
 	if operation == Int2Float {
-		return NewConvertCode(operation, result, operands)
+		return NewConvertCode(token, result, operands)
 	}
-	return NewOperatorCode(operation, result, operands)
+	return NewOperatorCode(token, result, operands)
 }

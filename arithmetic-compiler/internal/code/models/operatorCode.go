@@ -1,21 +1,22 @@
 package models
 
 import (
+	models2 "arithmetic-compiler/internal/lexical/models"
 	"errors"
 	"fmt"
 )
 
 type operatorCode struct {
-	operation CodeOperationType
+	operation models2.Token
 	result    string
-	first     string
-	second    string
+	first     models2.Token
+	second    models2.Token
 }
 
 func NewOperatorCode(
-	operationType CodeOperationType,
+	operationType models2.Token,
 	result string,
-	operands []string) (ThreeAddressCode, error) {
+	operands []models2.Token) (ThreeAddressCode, error) {
 	if len(operands) != 2 {
 		return nil, errors.New("invalid count operands for math operator code")
 	}
@@ -32,13 +33,14 @@ func (o *operatorCode) GetResult() string {
 }
 
 func (o *operatorCode) ToString() string {
-	return fmt.Sprintf("%s %s %s %s", string(o.operation), o.result, o.first, o.second)
+	operationType, _ := GetCodeOperation(o.operation)
+	return fmt.Sprintf("%s %s %s %s", string(operationType), o.result, o.first.Value, o.second.Value)
 }
 
-func (o *operatorCode) GetOperator() string {
-	return string(o.operation)
+func (o *operatorCode) GetOperator() models2.Token {
+	return o.operation
 }
 
-func (o *operatorCode) GetOperands() []string {
-	return []string{o.first, o.second}
+func (o *operatorCode) GetOperands() []models2.Token {
+	return []models2.Token{o.first, o.second}
 }

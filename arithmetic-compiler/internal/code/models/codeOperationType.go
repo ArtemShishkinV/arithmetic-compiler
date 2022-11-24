@@ -16,7 +16,8 @@ const (
 	Unknown   CodeOperationType = "неизвестный код операции"
 )
 
-func GetCodeOperation(lexemeType models.LexemeType) (CodeOperationType, error) {
+func GetCodeOperation(token models.Token) (CodeOperationType, error) {
+	lexemeType := token.Lexeme.Type
 	switch lexemeType {
 	case models.OpPlus:
 		return Add, nil

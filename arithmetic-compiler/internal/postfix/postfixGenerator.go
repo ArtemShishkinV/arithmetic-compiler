@@ -28,12 +28,12 @@ func (g *postfixGenerator) getPostfixExpression() []string {
 	var operands []string
 
 	for _, item := range g.actions {
-		operators = append(operators, item.GetOperator())
+		operators = append(operators, item.GetOperator().Value)
 	}
 
-	for i := len(g.actions) - 1; i >= 0; i-- {
-		operands = append(operands, g.actions[i].GetOperands()...)
-	}
+	//for i := len(g.actions) - 1; i >= 0; i-- {
+	//	operands = append(operands, g.actions[i].GetOperands()...)
+	//}
 
 	return g.concatOperandsAndOperators(operands, operators)
 }

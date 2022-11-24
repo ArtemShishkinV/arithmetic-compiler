@@ -45,8 +45,8 @@ func (g *CodeGenerator) GetThreeAddressCode(parNode models.Node) models2.ThreeAd
 					token1 := node.LeftNode.GetToken()
 					token2 := node.RightNode.GetToken()
 					code, _ = models2.NewThreeAddressCode(
-						node.Operator.Lexeme.Type,
-						len(g.Codes)+g.offsetId, []string{token1.Value, token2.Value})
+						node.Operator,
+						len(g.Codes)+g.offsetId, []models3.Token{token1, token2})
 				}
 				g.addCode(code, node)
 			}
@@ -57,26 +57,26 @@ func (g *CodeGenerator) GetThreeAddressCode(parNode models.Node) models2.ThreeAd
 			break
 		} else if lOk {
 			code = g.GetThreeAddressCode(lNode)
-			secondOperand := node.RightNode.GetToken().Value
+			secondOperand := node.RightNode.GetToken()
 			crNode, rOk = node.RightNode.(models.ConvertNode)
 			if rOk {
 				g.createCodesWithConvert(node, crNode)
-				secondOperand = g.Codes[len(g.Codes)-1].GetResult()
+				secondOperand = g.getTokenForResult(g.Codes[len(g.Codes)-1].GetResult())
 			}
-			code, _ = models2.NewThreeAddressCode(node.Operator.Lexeme.Type,
-				len(g.Codes)+g.offsetId, []string{code.GetResult(), secondOperand})
+			code, _ = models2.NewThreeAddressCode(node.Operator,
+				len(g.Codes)+g.offsetId, []models3.Token{g.getTokenForResult(code.GetResult()), secondOperand})
 			g.addCode(code, node)
 			node = rNode
 		} else if rOk {
 			code = g.GetThreeAddressCode(rNode)
-			secondOperand := node.LeftNode.GetToken().Value
+			secondOperand := node.LeftNode.GetToken()
 			crNode, rOk = node.LeftNode.(models.ConvertNode)
 			if rOk {
 				g.createCodesWithConvert(node, crNode)
-				secondOperand = g.Codes[len(g.Codes)-1].GetResult()
+				secondOperand = g.getTokenForResult(g.Codes[len(g.Codes)-1].GetResult())
 			}
-			code, _ = models2.NewThreeAddressCode(node.Operator.Lexeme.Type,
-				len(g.Codes)+g.offsetId, []string{secondOperand, code.GetResult()})
+			code, _ = models2.NewThreeAddressCode(node.Operator,
+				len(g.Codes)+g.offsetId, []models3.Token{secondOperand, g.getTokenForResult(code.GetResult())})
 			g.addCode(code, node)
 			node = lNode
 		}
@@ -88,23 +88,31 @@ func (g *CodeGenerator) createCodesWithConvert(node models.BinaryNode, convertNo
 	var tempCode, code models2.ThreeAddressCode
 	tempCode = g.GetThreeAddressCode(convertNode)
 	g.addCode(tempCode, convertNode)
-
+	tempToken := g.getTokenForResult(tempCode.GetResult())
 	if _, ok := node.LeftNode.(models.OperandNode); ok {
 		code, _ = models2.NewThreeAddressCode(
-			node.Operator.Lexeme.Type,
-			len(g.Codes)+g.offsetId, []string{node.LeftNode.GetToken().Value, tempCode.GetResult()})
+			node.Operator,
+			len(g.Codes)+g.offsetId, []models3.Token{node.LeftNode.GetToken(), tempToken})
 	} else if _, ok := node.RightNode.(models.OperandNode); ok {
 		code, _ = models2.NewThreeAddressCode(
-			node.Operator.Lexeme.Type,
-			len(g.Codes)+g.offsetId, []string{tempCode.GetResult(), node.RightNode.GetToken().Value})
+			node.Operator,
+			len(g.Codes)+g.offsetId, []models3.Token{tempToken, node.RightNode.GetToken()})
 	} else if _, ok := node.LeftNode.(models.ConvertNode); ok {
 		code, _ = models2.NewThreeAddressCode(
-			node.Operator.Lexeme.Type,
-			len(g.Codes)+g.offsetId, []string{tempCode.GetResult(), g.Codes[len(g.Codes)-2].GetResult()})
+			node.Operator,
+			len(g.Codes)+g.offsetId,
+			[]models3.Token{
+				tempToken,
+				g.getTokenForResult(g.Codes[len(g.Codes)-2].GetResult()),
+			})
 	} else if _, ok := node.RightNode.(models.ConvertNode); ok {
 		code, _ = models2.NewThreeAddressCode(
-			node.Operator.Lexeme.Type,
-			len(g.Codes)+g.offsetId, []string{g.Codes[len(g.Codes)-2].GetResult(), tempCode.GetResult()})
+			node.Operator,
+			len(g.Codes)+g.offsetId,
+			[]models3.Token{
+				g.getTokenForResult(g.Codes[len(g.Codes)-2].GetResult()),
+				tempToken,
+			})
 	}
 
 	return code
@@ -114,19 +122,20 @@ func (g *CodeGenerator) getCodeByNodeType(parNode models.Node) models2.ThreeAddr
 	var code models2.ThreeAddressCode
 
 	node, ok := parNode.(models.ConvertNode)
+	parNodeToken := parNode.GetToken()
 	if ok {
 		tempNode, ok := node.GetOperandNode().(models.BinaryNode)
 		if ok {
 			code = g.GetThreeAddressCode(tempNode)
-			code, _ = models2.NewThreeAddressCode(parNode.GetToken().Lexeme.Type,
-				len(g.Codes)+g.offsetId, []string{code.GetResult()})
+			code, _ = models2.NewThreeAddressCode(parNodeToken,
+				len(g.Codes)+g.offsetId, []models3.Token{g.getTokenForResult(code.GetResult())})
 		} else {
-			code, _ = models2.NewThreeAddressCode(parNode.GetToken().Lexeme.Type,
-				len(g.Codes)+g.offsetId, []string{node.GetOperandNode().GetToken().Value})
+			code, _ = models2.NewThreeAddressCode(parNodeToken,
+				len(g.Codes)+g.offsetId, []models3.Token{node.GetOperandNode().GetToken()})
 		}
 	} else {
-		code, _ = models2.NewThreeAddressCode(parNode.GetToken().Lexeme.Type,
-			len(g.Codes)+g.offsetId, []string{parNode.GetToken().Value})
+		code, _ = models2.NewThreeAddressCode(parNodeToken,
+			len(g.Codes)+g.offsetId, []models3.Token{parNode.GetToken()})
 	}
 
 	return code
@@ -144,4 +153,9 @@ func (g *CodeGenerator) addVarsInTable(vars []models3.Token) {
 			models2.NewTableDtoCode(item.Value, item.Lexeme.Symbol,
 				models.GetTypeResult(item.Lexeme)))
 	}
+}
+
+func (g *CodeGenerator) getTokenForResult(result string) models3.Token {
+	lexeme, _ := models3.NewLexeme(models3.Result, result)
+	return *models3.NewToken(*lexeme, result)
 }

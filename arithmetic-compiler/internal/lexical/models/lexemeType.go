@@ -15,6 +15,7 @@ const (
 	FloatNumber   LexemeType = "константа вещественного типа"
 	Int2Float     LexemeType = "(Int2Float)"
 	Unknown       LexemeType = "неизвестный символ"
+	Result        LexemeType = "результат выражения"
 )
 
 func IsFloatType(lexemeType LexemeType) bool {
