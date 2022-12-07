@@ -5,7 +5,8 @@ import (
 	"arithmetic-compiler/internal/lexical/writers/formaters"
 )
 
-type lexicalHandler struct{}
+type lexicalHandler struct {
+}
 
 func (h *lexicalHandler) Start(expression string) ([][]string, error) {
 	handler := lexical.NewLexicalAnalyzer()

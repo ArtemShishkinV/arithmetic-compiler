@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"arithmetic-compiler/internal/lexical"
+	models2 "arithmetic-compiler/internal/lexical/models"
 	"arithmetic-compiler/internal/semantic"
 	semantic2 "arithmetic-compiler/internal/semantic/writers"
 	"arithmetic-compiler/internal/syntax"
@@ -12,6 +13,7 @@ import (
 
 type semanticHandler struct {
 	analyzer semantic.SemanticAnalyzer
+	optimize bool
 }
 
 func (h *semanticHandler) Start(expression string) ([][]string, error) {
@@ -31,6 +33,11 @@ func (h *semanticHandler) GetSemanticTree(expression string) (gotree.Tree, model
 		return nil, nil, err
 	}
 	tokens := lexical.NewTokenBuilder().GetTokens(handler.prepareLexemesToSyntaxAnalyze(lexemes))
+
+	if h.optimize {
+		tokens = h.calculateConstantExpressions(tokens)
+	}
+
 	result, err := syntax.NewSyntaxAnalyzer(tokens).Analyze()
 	if err != nil {
 		return nil, result, err
@@ -46,4 +53,8 @@ func (h *semanticHandler) GetSemanticTree(expression string) (gotree.Tree, model
 	tree, node := semantic2.NewTreeBuilder(result).Build()
 
 	return tree, node, nil
+}
+func (h *semanticHandler) calculateConstantExpressions(tokens []models2.Token) []models2.Token {
+	fmt.Println(tokens)
+	return tokens
 }

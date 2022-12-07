@@ -1,6 +1,9 @@
 package models
 
-import "arithmetic-compiler/internal/lexical/models"
+import (
+	"arithmetic-compiler/internal/lexical/models"
+	"gopkg.in/Knetic/govaluate.v2"
+)
 
 type BinaryNode struct {
 	Operator   models.Token
@@ -36,4 +39,16 @@ func (b BinaryNode) getTypeResult() NodeTypeResult {
 		return Float
 	}
 	return Integer
+}
+
+func (b BinaryNode) calculateNode() Node {
+	expression, err := govaluate.NewEvaluableExpression(b.LeftNode.GetToken().Value + b.Operator.Value + b.RightNode.GetToken().Value)
+	if err != nil {
+		return b
+	}
+	lexType := b.LeftNode.GetNodeResult()
+	lexeme := models.NewLexeme()
+	token := models.NewToken()
+
+	return NewOperandNode(*token)
 }

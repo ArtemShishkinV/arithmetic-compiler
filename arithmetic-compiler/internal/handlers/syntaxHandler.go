@@ -7,7 +7,8 @@ import (
 	"arithmetic-compiler/internal/syntax/writers"
 )
 
-type syntaxHandler struct{}
+type syntaxHandler struct {
+}
 
 func (h *syntaxHandler) Start(expression string) ([][]string, error) {
 	lexemes, err := lexical.NewLexicalAnalyzer().Analyze(expression)
@@ -15,6 +16,7 @@ func (h *syntaxHandler) Start(expression string) ([][]string, error) {
 		return nil, err
 	}
 	tokens := lexical.NewTokenBuilder().GetTokens(h.prepareLexemesToSyntaxAnalyze(lexemes))
+
 	result, err := syntax.NewSyntaxAnalyzer(tokens).Analyze()
 	if err != nil {
 		return nil, err

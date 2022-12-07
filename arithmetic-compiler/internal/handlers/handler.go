@@ -16,7 +16,9 @@ func NewHandler(config2 config.Config) Handler {
 		return &syntaxHandler{}
 	}
 	if config2.Mode == config.Semantic {
-		return &semanticHandler{}
+		return &semanticHandler{
+			optimize: config2.Optimize,
+		}
 	}
 
 	if config2.Mode == config.Generator1 {
